@@ -15,6 +15,15 @@ export function NuevoUsuarioForm() {
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([])
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
 
+  const [correo, setCorreo] = useState('');
+  const [nombreCompleto, setNombreCompleto] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [rol, setRol] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [direccion, setDireccion] = useState('');
+  const [estaActivo, setEstaActivo] = useState(true);
+
+
   const permissions = [
     "Gestionar clientes",
     "Gestionar usuarios",
@@ -24,6 +33,42 @@ export function NuevoUsuarioForm() {
     "Ver reportes",
     "Configuración del sistema",
   ]
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const usuario = {
+      correo,
+      nombreCompleto,
+      contrasena: contrasena,
+      rol,
+      telefono,
+      direccion,
+      estaActivo,
+    };
+
+    try {
+      const response = await fetch('http://localhost:8080/api/usuarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(usuario),
+      });
+
+      if (response.ok) {
+        console.log('Usuario creado con éxito');
+        alert('Usuario creado con éxito');
+        window.location.href = '/dashboard/usuarios'; // Redirigir a la lista de usuarios
+
+      } else {
+        alert('Error al crear el usuario. Por favor, inténtalo de nuevo.');
+        console.error( response  );
+      }
+    } catch (error) {
+      alert('Error al crear el usuario. Por favor, inténtalo de nuevo.');
+      console.error('Error al crear usuario:', error);
+    }
+  };
 
   const handlePermissionChange = (permission: string, checked: boolean) => {
     if (checked) {
@@ -51,37 +96,37 @@ export function NuevoUsuarioForm() {
           <CardTitle>Información del Usuario</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Información Personal */}
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="nombre">Nombre completo *</Label>
-                <Input id="nombre" placeholder="Ingresa el nombre completo" required />
+                <Input id="nombre" placeholder="Ingresa el nombre completo" required  value={nombreCompleto} onChange={(e) => setNombreCompleto(e.target.value)} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Correo electrónico *</Label>
-                <Input id="email" type="email" placeholder="usuario@barbershop.com" required />
+                <Input id="email" type="email" placeholder="usuario@barbershop.com" required value={correo} onChange={(e) => setCorreo(e.target.value)} />
               </div>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="telefono">Teléfono</Label>
-                <Input id="telefono" placeholder="+1 234 567 8900" />
+                <Label htmlFor="telefono">TeléfonoS</Label>
+                <Input id="telefono" placeholder="+1 234 567 8900"  value={telefono} onChange={(e) => setTelefono(e.target.value)} />
               </div>
 
               <div className="space-y-2">
                 <Label>Rol del usuario *</Label>
-                <Select>
+                <Select value={rol} onValueChange={setRol}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona el rol" />
+                    <SelectValue placeholder="Selecciona el rol"  />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="administrador">Administrador</SelectItem>
-                    <SelectItem value="barbero">Barbero</SelectItem>
-                    <SelectItem value="recepcionista">Recepcionista</SelectItem>
-                    <SelectItem value="gerente">Gerente</SelectItem>
+                  <SelectContent >
+                    <SelectItem value="ADMIN">Administrador</SelectItem>
+                    <SelectItem value="BARBERO">Barbero</SelectItem>
+                    {/* <SelectItem value="recepcionista">Recepcionista</SelectItem> */}
+                    {/* <SelectItem value="gerente">Gerente</SelectItem> */}
                   </SelectContent>
                 </Select>
               </div>
@@ -91,26 +136,27 @@ export function NuevoUsuarioForm() {
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="password">Contraseña *</Label>
-                <Input id="password" type="password" placeholder="••••••••" required />
+                <Input id="password" type="password" placeholder="••••••••" required value={contrasena} onChange={(e) => setContrasena(e.target.value)} />
               </div>
 
-              <div className="space-y-2">
+             {/* TODO : Implementar confirmacion de contrasena */}
+              {/* <div className="space-y-2">
                 <Label htmlFor="confirm-password">Confirmar contraseña *</Label>
-                <Input id="confirm-password" type="password" placeholder="••••••••" required />
-              </div>
+                <Input id="confirm-password" type="password" placeholder="••••••••" required  value={contrasena} onChange={(e) => setContrasena(e.target.value)} />
+              </div> */}
             </div>
 
             {/* Estado */}
             <div className="space-y-2">
               <Label>Estado del usuario</Label>
-              <Select defaultValue="activo">
+              <Select defaultValue="activo" value={estaActivo ? "true" : "false"} onValueChange={(value) => setEstaActivo(value === "true")}>
                 <SelectTrigger>
-                  <SelectValue />
+                  {estaActivo ? "Activo" : "Inactivo"}
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="activo">Activo</SelectItem>
                   <SelectItem value="inactivo">Inactivo</SelectItem>
-                  <SelectItem value="suspendido">Suspendido</SelectItem>
+                  {/* <SelectItem value="suspendido">Suspendido</SelectItem> */}
                 </SelectContent>
               </Select>
             </div>

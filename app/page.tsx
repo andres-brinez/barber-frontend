@@ -37,6 +37,7 @@ export default function LoginPages() {
 
 //      console.log('Login exitoso:', response.data);
       // redireccionando a dashboard con la url
+      setIsError(false);
       setMessage('Inicio de sesión exitoso. Redirigiendo...');
       window.location.href = '/dashboard';
 

@@ -1,38 +1,35 @@
+"use client";
+
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { MoreHorizontal, Edit, Trash2 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect, useState } from "react"
 
-const usuarios = [
-  {
-    id: 1,
-    nombre: "Admin Principal",
-    email: "admin@barbershop.com",
-    rol: "Administrador",
-    estado: "Activo",
-    ultimoAcceso: "2024-01-15",
-  },
-  {
-    id: 2,
-    nombre: "Carlos Barbero",
-    email: "carlos@barbershop.com",
-    rol: "Barbero",
-    estado: "Activo",
-    ultimoAcceso: "2024-01-14",
-  },
-  {
-    id: 3,
-    nombre: "María Recepcionista",
-    email: "maria@barbershop.com",
-    rol: "Recepcionista",
-    estado: "Activo",
-    ultimoAcceso: "2024-01-13",
-  },
-]
 
 export function UsuariosTable() {
+
+  const [usuarios, setUsuarios] = useState([]);
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    const fetchUsuarios = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/usuarios');
+        const data = await response.json();
+        setUsuarios(data);
+        setCargando(false);
+      } catch (error) {
+        console.error(error);
+        setCargando(false);
+      }
+    };
+    fetchUsuarios();
+  }, []);
+
   return (
     <Card>
       <CardHeader>
@@ -50,18 +47,21 @@ export function UsuariosTable() {
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
+
             {usuarios.map((usuario) => (
               <TableRow key={usuario.id}>
-                <TableCell className="font-medium">{usuario.nombre}</TableCell>
-                <TableCell>{usuario.email}</TableCell>
+                <TableCell className="font-medium">{usuario.nombreCompleto}</TableCell>
+                <TableCell>{usuario.correo}</TableCell>
                 <TableCell>
                   <Badge variant="outline">{usuario.rol}</Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge className="bg-green-100 text-green-800">{usuario.estado}</Badge>
-                </TableCell>
-                <TableCell>{usuario.ultimoAcceso}</TableCell>
+                  <Badge className={usuario.estaActivo ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+                    {usuario.estaActivo ? "Activo" : "Inactivo"}
+                  </Badge>                </TableCell>
+                <TableCell>{"2024-01-14"}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -85,6 +85,12 @@ export function UsuariosTable() {
             ))}
           </TableBody>
         </Table>
+        {cargando && (
+          <div className="text-center mt-4">
+            <span>Cargando datos...</span>
+            <div className="border-4 border-gray-300 border-t-blue-500 rounded-full w-8 h-8 animate-spin"></div>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

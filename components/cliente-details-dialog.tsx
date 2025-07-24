@@ -55,8 +55,8 @@ interface ClienteDetailsDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   cliente: Cliente | null
-  onEdit?: (cliente: Cliente) => void
-  onDelete?: (cliente: Cliente) => void
+  onEdit?: (cliente: any) => void
+  onDelete?: (cliente: any) => void
 }
 
 export function ClienteDetailsDialog({ open, onOpenChange, cliente, onEdit, onDelete }: ClienteDetailsDialogProps) {

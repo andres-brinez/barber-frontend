@@ -39,7 +39,7 @@ export function LogoutButton() {
       <AlertDialogTrigger asChild>
         <div className="flex items-center w-full cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Cerrar Sesión</span>
+          <span>Salir</span>
         </div>
       </AlertDialogTrigger>
       <AlertDialogContent>

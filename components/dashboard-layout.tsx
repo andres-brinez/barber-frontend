@@ -162,7 +162,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="ml-auto">
-            <HeaderLogout />
+<HeaderLogout />
+
+
+
           </div>
         </header>
 

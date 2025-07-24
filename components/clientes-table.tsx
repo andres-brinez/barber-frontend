@@ -159,7 +159,7 @@ export function ClientesTable() {
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
-       */}
+      */}
     
     </>
   )

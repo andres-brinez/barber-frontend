@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -27,7 +27,7 @@ interface Cliente {
   medidasLateral2: number
   medidasBarba: number
   medidasLongitudGeneral: number
-  realizaDeporte: string
+  realizaDeporte: boolean
   deporteEspecifico?: string
   tiempoPeinarseMin: number
   tiempoEntreCortesDias: number
@@ -39,14 +39,14 @@ interface Cliente {
   zonasDisimular?: string
   tieneArrugasProtuberancias: string
   zonasArrugasProtuberancias?: string
-  tienePlagiocefalia: string
+  tienePlagiosefalia: string
   texturaCabello: string
   densidadCabello: string
   tipoRostro: string
   tipoPerfil: string
   corteCorrectivo: string
   productoAdecuadoMantenimiento: string
-  fotos: string[]
+  urlsImagenesCortes: string[]
   direccion: string
   notas: string
 }
@@ -54,35 +54,53 @@ interface Cliente {
 interface ClienteDetailsDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  cliente: Cliente | null
+  idCliente: number | null
   onEdit?: (cliente: any) => void
-  onDelete?: (cliente: any) => void
+  onDelete?: (cliente: Cliente) => void
 }
 
-export function ClienteDetailsDialog({ open, onOpenChange, cliente, onEdit, onDelete }: ClienteDetailsDialogProps) {
+export function ClienteDetailsDialog({ open, onOpenChange, idCliente, onEdit, onDelete }: ClienteDetailsDialogProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [cliente, setCliente] = useState<Cliente | null>(null);
 
-  if (!cliente) return null
-
-  const handleEdit = () => {
-    if (onEdit) {
-      onEdit(cliente)
+  useEffect(() => {
+    if (idCliente !== null) {
+      console.log("obteniendo los datos");
+      fetch(`http://localhost:8080/api/perfiles-cliente/${idCliente}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          setCliente(data);
+          idCliente = null
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
-    onOpenChange(false)
-  }
+  }, [idCliente]);
 
-  const handleDelete = () => {
-    setDeleteDialogOpen(true)
-  }
+  if (idCliente === null || idCliente === undefined || !cliente) return null;
 
-  const confirmDelete = () => {
-    if (onDelete) {
-      onDelete(cliente)
-    }
-    setDeleteDialogOpen(false)
-    onOpenChange(false)
-  }
+
+  // const handleEdit = () => {
+  //   if (onEdit) {
+  //     onEdit(cliente)
+  //   }
+  //   onOpenChange(false)
+  // }
+
+  // const handleDelete = () => {
+  //   setDeleteDialogOpen(true)
+  // }
+
+  // const confirmDelete = () => {
+  //   if (onDelete) {
+  //     onDelete(cliente)
+  //   }
+  //   setDeleteDialogOpen(false)
+  //   onOpenChange(false)
+  // }
 
   return (
     <>
@@ -92,14 +110,15 @@ export function ClienteDetailsDialog({ open, onOpenChange, cliente, onEdit, onDe
             <div className="flex items-center justify-between">
               <DialogTitle>Información Completa del Cliente</DialogTitle>
               <div className="flex gap-2">
-                <Button onClick={handleEdit} size="sm" className="bg-amber-600 hover:bg-amber-700">
+                {/* // Esto parece que no deb ir ahi */}
+                {/* <Button onClick={handleEdit} size="sm" className="bg-amber-600 hover:bg-amber-700">
                   <Edit className="h-4 w-4 mr-2" />
                   Editar
                 </Button>
                 <Button onClick={handleDelete} size="sm" variant="destructive">
                   <Trash2 className="h-4 w-4 mr-2" />
                   Eliminar
-                </Button>
+                </Button> */}
               </div>
             </div>
           </DialogHeader>
@@ -112,14 +131,14 @@ export function ClienteDetailsDialog({ open, onOpenChange, cliente, onEdit, onDe
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold">{cliente.nombreCompleto}</h3>
                     <div className="flex items-center gap-2">
-                      <Badge
+                      {/* <Badge
                         variant={cliente.estado === "Activo" ? "default" : "secondary"}
                         className={cliente.estado === "Activo" ? "bg-green-100 text-green-800" : ""}
                       >
                         {cliente.estado}
-                      </Badge>
+                      </Badge> */}
                       <span className="text-sm text-muted-foreground">
-                        {cliente.edad} años • {cliente.ocupacion}
+                        {cliente.edad} años -  {cliente.ocupacion}
                       </span>
                     </div>
                   </div>
@@ -134,25 +153,26 @@ export function ClienteDetailsDialog({ open, onOpenChange, cliente, onEdit, onDe
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span>{cliente.email}</span>
+                      <span className="text-muted-foreground">{cliente.email || "No disponible"}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span>{cliente.telefono}</span>
+                      <span className="text-muted-foreground">{cliente.telefono || "No disponible"}</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                      <span>{cliente.direccion}</span>
+                      <span className="text-muted-foreground">{cliente.direccion || "No disponible"}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span>
-                        Última visita:{" "}
-                        {new Date(cliente.ultimaVisita).toLocaleDateString("es-ES", {
+                      <span className="flex items-center gap-2">
+                        Última Visita: {"30/08/2004"}
+
+                        {/* {new Date(cliente.ultimaVisita).toLocaleDateString("es-ES", {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
-                        })}
+                        })} */}
                       </span>
                     </div>
                   </div>
@@ -163,7 +183,8 @@ export function ClienteDetailsDialog({ open, onOpenChange, cliente, onEdit, onDe
               <div className="space-y-3">
                 <h4 className="font-medium">Fotos del Cliente</h4>
                 <div className="grid gap-2 grid-cols-3">
-                  {cliente.fotos.map((foto, index) => (
+
+                  {cliente.urlsImagenesCortes && cliente.urlsImagenesCortes.map((foto, index) => (
                     <div key={index} className="relative group cursor-pointer" onClick={() => setSelectedImage(foto)}>
                       <Image
                         src={foto || "/placeholder.svg"}
@@ -243,7 +264,9 @@ export function ClienteDetailsDialog({ open, onOpenChange, cliente, onEdit, onDe
               <div className="grid gap-4 md:grid-cols-2 text-sm">
                 <div>
                   <span className="font-medium">Realiza Deporte:</span>
-                  <p className="text-muted-foreground capitalize">{cliente.realizaDeporte}</p>
+                  <p className="text-muted-foreground">
+                    {cliente.realizaDeporte ? 'Si' : 'No'}
+                  </p>
                   {cliente.deporteEspecifico && (
                     <p className="text-xs text-muted-foreground">Deporte: {cliente.deporteEspecifico}</p>
                   )}
@@ -260,7 +283,7 @@ export function ClienteDetailsDialog({ open, onOpenChange, cliente, onEdit, onDe
               {cliente.corteReferencia && (
                 <div>
                   <span className="font-medium">Corte de Referencia:</span>
-                  <p className="text-muted-foreground text-sm bg-gray-50 p-3 rounded-lg mt-1">
+                  <p className="text-muted-foreground">
                     {cliente.corteReferencia}
                   </p>
                 </div>
@@ -309,15 +332,14 @@ export function ClienteDetailsDialog({ open, onOpenChange, cliente, onEdit, onDe
                   <span className="font-medium">Desea Disimular Algo:</span>
                   <p className="text-muted-foreground capitalize">{cliente.deseaDisimularAlgoDeSuRostro}</p>
                   {cliente.zonasDisimular && (
-                    <p className="text-xs text-muted-foreground bg-gray-50 p-2 rounded mt-1">
+                    <p className="text-muted-foreground">
                       Zonas: {cliente.zonasDisimular}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <span className="font-medium">Tiene Arrugas/Protuberancias:</span>
-                  <p className="text-muted-foreground capitalize">{cliente.tieneArrugasProtuberancias}</p>
+                  <span className="font-medium">Tiene Arrugas/Protuberancias:</span> <p className="text-muted-foreground capitalize">{cliente.tieneArrugasProtuberancias ? 'Si' : 'No'}</p>
                   {cliente.zonasArrugasProtuberancias && (
                     <p className="text-xs text-muted-foreground bg-gray-50 p-2 rounded mt-1">
                       Zonas: {cliente.zonasArrugasProtuberancias}
@@ -327,7 +349,9 @@ export function ClienteDetailsDialog({ open, onOpenChange, cliente, onEdit, onDe
 
                 <div>
                   <span className="font-medium">Tiene Plagiocefalia:</span>
-                  <p className="text-muted-foreground capitalize">{cliente.tienePlagiocefalia}</p>
+                  <p className="text-muted-foreground">
+                  {cliente.tienePlagiosefalia ? 'Si' : 'No'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -357,13 +381,14 @@ export function ClienteDetailsDialog({ open, onOpenChange, cliente, onEdit, onDe
               <div className="space-y-3">
                 <div>
                   <span className="font-medium">Corte Correctivo:</span>
-                  <p className="text-muted-foreground text-sm bg-amber-50 p-3 rounded-lg mt-1">
-                    {cliente.corteCorrectivo}
+
+                  <p className="text-muted-foreground capitalize">
+                    {cliente.corteCorrectivo ? 'Si' : 'No'}
                   </p>
                 </div>
                 <div>
                   <span className="font-medium">Producto para Mantenimiento:</span>
-                  <p className="text-muted-foreground text-sm bg-amber-50 p-3 rounded-lg mt-1">
+                  <p className="text-muted-foreground capitalize">
                     {cliente.productoAdecuadoMantenimiento}
                   </p>
                 </div>
@@ -409,14 +434,14 @@ export function ClienteDetailsDialog({ open, onOpenChange, cliente, onEdit, onDe
         </DialogContent>
       </Dialog>
 
-      {/* Diálogo de confirmación para eliminar */}
+      {/* Diálogo de confirmación para eliminar
       <DeleteConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={confirmDelete}
         title="¿Eliminar cliente?"
         description={`¿Estás seguro de que deseas eliminar al cliente "${cliente.nombreCompleto}"? Esta acción no se puede deshacer y se perderá todo su historial y información detallada.`}
-      />
+      /> */}
     </>
   )
 }

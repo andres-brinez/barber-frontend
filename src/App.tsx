@@ -12,13 +12,18 @@ import ConfiguracionPage from "./pages/ConfiguracionPage"
 import AgendaPage from "./pages/AgendaPage"
 import AgendaCompletaPage from "./pages/AgendaCompletaPage"
 import "./App.css"
+import LoginPages from "@/app/page"
 
 function App() {
+  
   return (
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<LoginPage />} />
+          
+          <Route path="/prieba" element={<LoginPage />} />
+          <Route path="/" element={<LoginPages />} />
+        
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/dashboard/clientes" element={<ClientesPage />} />
           <Route path="/dashboard/clientes/nuevo" element={<NuevoClientePage />} />

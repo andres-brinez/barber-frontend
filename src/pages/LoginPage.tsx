@@ -46,7 +46,7 @@ export default function LoginPage() {
               BarberShop Pro
             </h1>
             <h2 className="text-2xl font-semibold text-foreground">Iniciar sesión</h2>
-            <p className="text-muted-foreground">Accede a tu panel de administración</p>
+            <p className="text-muted-foreground">Accede a tu panel de administración felix </p>
           </div>
 
           {/* Formulario */}
@@ -90,7 +90,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-4">
-              <Button type="submit" className="w-full h-11 bg-amber-600 hover:bg-amber-700">
+              <Button type="submit" className="w-full h-11 bg-amber-600 hover:bg-amber-700" asChild>
                 Iniciar sesión
               </Button>
 

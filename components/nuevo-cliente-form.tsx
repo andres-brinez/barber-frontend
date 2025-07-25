@@ -47,7 +47,6 @@ export function NuevoClienteForm() {
   const [tipoPerfil, setTipoPerfil] = useState('');
   const [corteCorrectivo, setCorteCorrectivo] = useState(false);
   const [productoAdecuadoMantenimiento, setProductoAdecuadoMantenimiento] = useState('');
-  const [imagenFiles, setImagenFiles] = useState(null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
@@ -100,24 +99,33 @@ export function NuevoClienteForm() {
       productoAdecuadoMantenimiento,
     };
 
-    // Verificar que la imagen sea un archivo válido
-    if (imagenFiles && !imagenFiles.type.startsWith('image/')) {
-      alert('Por favor, seleccione un archivo de imagen válido');
-      return;
-    }
+    // // Verificar que la imagen sea un archivo válido
+    // if (imagenFiles && !imagenFiles.type.startsWith('image/')) {
+    //   alert('Por favor, seleccione un archivo de imagen válido');
+    //   return;
+    // }
 
     const formData = new FormData();
     // Agregar los datos del perfil al FormData
     formData.append('perfilCliente', JSON.stringify(perfilCliente));
-    if (imagenFiles !== null) {
-      uploadedImages.forEach((image) => {
-        formData.append('imagenFiles', image);
+    // Iterar sobre la lista uploadedImages para añadir cada archivo al FormData
+    if (uploadedImages.length > 0) {
+      console.log("Imágenes a subir:", uploadedImages);
+      uploadedImages.forEach((image, index) => {
+        // Asegúrate de que el nombre del campo coincida con lo que espera tu backend
+        // Si tu backend espera una lista de archivos bajo un mismo nombre, usa el mismo nombre de campo
+        formData.append(`imageFiles`, image); // 'imagenFiles' como un array en el backend
       });
+    } else {
+      console.log("No hay imágenes seleccionadas para subir.");
     }
+    console.log('Enviando perfilCliente:', formData);
+    console.log(formData.getAll('perfilCliente')); // devuelve un array con los datos
+    console.log(formData.getAll('imagenFiles')); // devuelve un array con los archivos de imagen
+
 
     // Enviar la solicitud POST a la API
     try {
-      console.log('Enviando perfilCliente:', formData);
       const response = await axios.post('http://localhost:8080/api/perfiles-cliente', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -132,10 +140,10 @@ export function NuevoClienteForm() {
 
       } else {
         alert('Error al crear el perfil');
-         console.error(response);
+        console.error(response);
       }
     } catch (error) {
-     console.error('Error al enviar la solicitud:', error);
+      console.error('Error al enviar la solicitud:', error);
       alert('Error al enviar la solicitud');
     }
   };
@@ -456,11 +464,11 @@ export function NuevoClienteForm() {
                   <Label>¿Tiene plagiocefalia?</Label>
                   <RadioGroup value={tienePlagiosefalia} onValueChange={(value) => setTienePlagiosefalia(value === 'si' ? true : false)}>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="si" id="plagiocefalia-si" />
+                      <RadioGroupItem value="si" id="plagiocefalia-si" checked={tienePlagiosefalia} />
                       <Label htmlFor="plagiocefalia-si">Sí</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="no" id="plagiocefalia-no" />
+                      <RadioGroupItem value="no" id="plagiocefalia-no" checked={!tienePlagiosefalia} />
                       <Label htmlFor="plagiocefalia-no">No</Label>
                     </div>
                   </RadioGroup>

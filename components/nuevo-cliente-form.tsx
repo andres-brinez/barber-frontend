@@ -144,7 +144,7 @@ export function NuevoClienteForm() {
       }
     } catch (error) {
       console.error('Error al enviar la solicitud:', error);
-      alert('Error al enviar la solicitud');
+      alert('Error al enviar la solicitud, verifica que todos los datos se hayan ingresado');
     }
   };
 
@@ -173,7 +173,7 @@ export function NuevoClienteForm() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="ocupacion">Ocupación</Label>
-                  <Input id="ocupacion" placeholder="Ej: Ingeniero, Estudiante, etc." value={ocupacion} onChange={(e) => setOcupacion(e.target.value)} />
+                  <Input id="ocupacion" placeholder="Ej: Ingeniero, Estudiante, etc." value={ocupacion} onChange={(e) => setOcupacion(e.target.value)}  required/>
                 </div>
                 <div className="space-y-2">
                   <Label>Estado Civil</Label>
